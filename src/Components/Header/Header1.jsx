@@ -1,13 +1,39 @@
-import { useContext } from "react";
+import { useContext , useState } from "react";
 import { ColorModeContext } from "../../theme";
 import { IconButton, Stack, Typography, useTheme } from "@mui/material";
 import { DarkModeOutlined, Facebook, Instagram, LightModeOutlined, Twitter } from "@mui/icons-material";
 import {Box} from "@mui/material";
+// selected menu
+import List from '@mui/material/List';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
+import MenuItem from '@mui/material/MenuItem';
+import Menu from '@mui/material/Menu';
 
+const options = [
+  'AR',
+  'EN',
+];
 export default function Header1() {
   const colorMode = useContext(ColorModeContext);
   const theme = useTheme();
 
+  // selected menu
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [selectedIndex, setSelectedIndex] = useState(1);
+  const open = Boolean(anchorEl);
+  const handleClickListItem = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  function handleMenuItemClick(event , index) {
+    setSelectedIndex(index);
+    setAnchorEl(null);
+  }
+
+  function handleClose() {
+    setAnchorEl(null);
+  }
   return (
     <Box sx={{bgcolor:"#283445",}}>
       <Stack direction={"row"} alignItems={"center"}>
@@ -60,6 +86,49 @@ export default function Header1() {
           </IconButton>
         )}
       </div>
+      <List
+        component="nav"
+        aria-label="Device settings"
+        sx={{ bgcolor: 'background.paper' }}
+      >
+        <ListItemButton
+          id="lock-button"
+          aria-haspopup="listbox"
+          aria-controls="lock-menu"
+          aria-label="when device is locked"
+          aria-expanded={open ? 'true' : undefined}
+          onClick={handleClickListItem}
+        >
+          <ListItemText
+            primary="When device is locked"
+            secondary={options[selectedIndex]}
+          />
+        </ListItemButton>
+      </List>
+      <Menu
+        id="lock-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        slotProps={{
+          list: {
+            'aria-labelledby': 'lock-button',
+            role: 'listbox',
+          },
+        }}
+      >
+        {options.map((option, index) => (
+          <MenuItem
+            key={option}
+            disabled={index === 0}
+            selected={index === selectedIndex}
+            onClick={(event) => handleMenuItemClick(event, index)}
+          >
+            {option}
+          </MenuItem>
+        ))}
+      </Menu>
+
       <IconButton >
       <Facebook 
       sx={{
